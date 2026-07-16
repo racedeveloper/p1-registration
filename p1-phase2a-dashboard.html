@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P1 Phase 2A 2026 — Vacancy &amp; Ballot Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #0d1826;
+    --ink-2: #101d2e;
+    --panel: #142136;
+    --panel-2: #182741;
+    --border: #263a54;
+    --border-soft: #1d2d45;
+    --amber: #f0a202;
+    --amber-dim: #c97c0a;
+    --amber-glow: rgba(240,162,2,0.16);
+    --paper: #ece7d8;
+    --paper-dim: #b9c2d0;
+    --muted: #7f8fa6;
+    --green: #52b788;
+    --green-dim: rgba(82,183,136,0.14);
+    --violet: #a79bf0;
+    --violet-dim: rgba(167,155,240,0.14);
+    --amber-row: rgba(240,162,2,0.10);
+    --radius: 10px;
+    --font-display: "Space Grotesk", "Inter", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 12% -10%, rgba(240,162,2,0.06), transparent 60%),
+      radial-gradient(900px 500px at 90% 0%, rgba(167,155,240,0.05), transparent 55%),
+      var(--ink);
+    color: var(--paper);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{color:inherit;}
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ===== Top bar ===== */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 22px 0 18px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+  .brand .mark{
+    font-weight:700;
+    font-size: 15px;
+    color: var(--amber);
+    letter-spacing: 0.14em;
+  }
+  .brand .div{ color: var(--muted); }
+  .brand .sub{
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .status-pill{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--amber);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  /* ===== Hero ===== */
+  .hero{
+    padding: 8px 0 36px;
+  }
+  .hero-eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+  .hero h1{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 4.4vw, 46px);
+    line-height: 1.12;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+    max-width: 820px;
+  }
+  .hero h1 em{
+    font-style: normal;
+    color: var(--amber);
+  }
+  .hero p{
+    color: var(--paper-dim);
+    max-width: 620px;
+    font-size: 15.5px;
+    margin: 0;
+  }
+
+  /* ===== Split-flap stat board ===== */
+  .board{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 34px;
+  }
+  @media (max-width: 780px){
+    .board{ grid-template-columns: repeat(2, 1fr); }
+  }
+  .stat-card{
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 18px 16px;
+    position: relative;
+    overflow:hidden;
+  }
+  .stat-card::before{
+    content:"";
+    position:absolute; inset:0 0 auto 0;
+    height:2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity:0.6;
+  }
+  .flap-row{
+    display:flex;
+    gap:4px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .flap{
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--paper);
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    min-width: 22px;
+    height: 38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position: relative;
+    box-shadow: inset 0 -12px 14px -12px rgba(0,0,0,0.55);
+    opacity: 0;
+    transform: rotateX(70deg);
+    animation: flip 0.5s ease forwards;
+  }
+  .flap::after{
+    content:"";
+    position:absolute; left:0; right:0; top:50%;
+    height:1px;
+    background: rgba(0,0,0,0.5);
+  }
+  .flap.sep{
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    box-shadow:none;
+    width: 12px;
+    min-width: 12px;
+  }
+  .flap.unit{
+    color: var(--amber);
+    font-size: 18px;
+  }
+  @keyframes flip{
+    to{ opacity:1; transform: rotateX(0deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .flap{ animation: none; opacity:1; transform:none; }
+  }
+  .stat-label{
+    font-size: 12.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-family: var(--font-mono);
+  }
+  .stat-foot{
+    margin-top:6px;
+    font-size: 12.5px;
+    color: var(--paper-dim);
+  }
+  .stat-foot b{ color: var(--paper); font-weight:600; }
+
+  /* ===== Section headers ===== */
+  section{ margin-top: 58px; }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .section-head h2{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-head h2 .tag{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+  .section-head p{
+    margin:0;
+    font-size: 13.5px;
+    color: var(--muted);
+    max-width: 460px;
+  }
+
+  /* ===== Two-panel charts ===== */
+  .panels{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 860px){ .panels{ grid-template-columns: 1fr; } }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 20px 8px;
+  }
+  .panel-title{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display:flex;
+    justify-content: space-between;
+  }
+  .bar-row{
+    display:grid;
+    grid-template-columns: 168px 1fr 64px;
+    align-items:center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+  }
+  .bar-row:last-child{ border-bottom:none; }
+  .bar-name{
+    color: var(--paper);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track{
+    height: 10px;
+    background: var(--ink-2);
+    border-radius: 4px;
+    overflow:hidden;
+    border: 1px solid var(--border-soft);
+  }
+  .bar-fill{
+    height:100%;
+    border-radius: 4px 0 0 4px;
+  }
+  .bar-fill.amber{ background: linear-gradient(90deg, var(--amber-dim), var(--amber)); }
+  .bar-fill.green{ background: linear-gradient(90deg, #2f8b63, var(--green)); }
+  .bar-val{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--paper-dim);
+    text-align:right;
+  }
+
+  /* ===== Controls ===== */
+  .controls{
+    display:flex;
+    gap: 12px;
+    align-items:center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .search{
+    flex: 1 1 240px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--paper);
+    font-family: var(--font-body);
+    font-size: 14px;
+  }
+  .search::placeholder{ color: var(--muted); }
+  .search:focus, button:focus-visible, th button:focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    padding: 8px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--paper-dim);
+    cursor: pointer;
+    transition: all .15s ease;
+    display:flex; align-items:center; gap:7px;
+  }
+  .chip .dot{ width:7px; height:7px; border-radius:50%; }
+  .chip[data-active="true"]{
+    color: var(--ink);
+    background: var(--paper);
+    border-color: var(--paper);
+  }
+  .chip:hover{ border-color: var(--amber); }
+
+  /* ===== Table ===== */
+  .table-wrap{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table{
+    width:100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  thead th{
+    text-align:left;
+    padding: 13px 16px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    position: sticky;
+    top:0;
+  }
+  thead th button{
+    all: unset;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap: 5px;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+  }
+  thead th button:hover{ color: var(--amber); }
+  thead th .arrow{ opacity:0.4; font-size: 10px; }
+  thead th[data-sorted="true"] .arrow{ opacity:1; color: var(--amber); }
+
+  tbody td{
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background: rgba(255,255,255,0.02); }
+  tbody tr.is-ballot{ background: var(--amber-row); }
+
+  .school-name{ color: var(--paper); font-weight:500; }
+  .num{ font-family: var(--font-mono); color: var(--paper-dim); }
+  .fill-cell{ display:flex; align-items:center; gap:10px; min-width: 150px; }
+  .fill-track{
+    flex:1;
+    height: 7px;
+    border-radius: 4px;
+    background: var(--ink-2);
+    border: 1px solid var(--border-soft);
+    overflow:hidden;
+  }
+  .fill-bar{ height:100%; }
+  .fill-pct{ font-family: var(--font-mono); font-size: 12px; color: var(--paper-dim); width: 40px; text-align:right; }
+
+  .tag{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 5px;
+    font-weight: 600;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    white-space:nowrap;
+  }
+  .tag .dot{ width:6px; height:6px; border-radius:50%; }
+  .tag.ballot{ background: var(--amber-glow); color: var(--amber); }
+  .tag.ballot .dot{ background: var(--amber); }
+  .tag.clear{ background: var(--green-dim); color: var(--green); }
+  .tag.clear .dot{ background: var(--green); }
+  .tag.restricted{ background: var(--violet-dim); color: var(--violet); }
+  .tag.restricted .dot{ background: var(--violet); }
+
+  .empty-row td{ text-align:center; color: var(--muted); padding: 32px 16px; }
+
+  .table-note{
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .count-tag{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ===== Footer ===== */
+  footer{
+    margin-top: 70px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-soft);
+    display:flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  footer a{ color: var(--amber); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark">MOE · P1 REGISTRATION</span>
+      <span class="div">/</span>
+      <span class="sub">vacancy &amp; balloting board</span>
+    </div>
+    <div class="status-pill">Phase 2A · Closed</div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">2026 Registration Exercise — All 178 Schools</div>
+    <h1>Every seat, every school:<br>Phase 2A at a <em>glance</em>.</h1>
+    <p>A full readout of Singapore's Phase 2A Primary&nbsp;1 registration — vacancies, applicants and balloting status for all 178 schools with places this phase, scraped and tallied from MOE's official tracker.</p>
+
+    <div class="board" id="board"></div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Where the odds are tightest <span class="tag">by oversubscription ratio</span></h2>
+      <p>Schools with confirmed balloting, ranked by applicants per vacancy.</p>
+    </div>
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-title"><span>Most contested</span><span>applicants ÷ vacancies</span></div>
+        <div id="chart-contested"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span>Most breathing room</span><span>spare vacancies</span></div>
+        <div id="chart-spare"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Full school ledger</h2>
+      <p>Search, filter and sort all 178 schools.</p>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="search" type="text" placeholder="Search school name…" />
+      <div class="chips" id="chips">
+        <button class="chip" data-filter="all" data-active="true"><span class="dot" style="background:var(--paper)"></span>All (178)</button>
+        <button class="chip" data-filter="ballot"><span class="dot" style="background:var(--amber)"></span>Balloting (31)</button>
+        <button class="chip" data-filter="clear"><span class="dot" style="background:var(--green)"></span>No ballot (143)</button>
+        <button class="chip" data-filter="restricted"><span class="dot" style="background:var(--violet)"></span>Restricted (4)</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div style="max-height:640px; overflow:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th data-key="name"><button>School <span class="arrow">↕</span></button></th>
+            <th data-key="vac"><button>Vacancies <span class="arrow">↕</span></button></th>
+            <th data-key="app"><button>Applicants <span class="arrow">↕</span></button></th>
+            <th data-key="pct"><button>Fill <span class="arrow">↕</span></button></th>
+            <th data-key="status"><button>Status <span class="arrow">↕</span></button></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      </div>
+      <div class="table-note" id="table-note"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Source: <a href="https://www.moe.gov.sg/primary/p1-registration/vacancies-and-balloting" target="_blank" rel="noopener">MOE — Vacancies and balloting updates</a>. Figures as published 15 Jul 2026; MOE notes these are provisional pending final verification.</div>
+    <div>Built for personal reference · not an official MOE product</div>
+  </footer>
+
+</div>
+
+<script>
+const SCHOOLS = [{"name": "Admiralty Primary School", "vac": 44, "app": 44, "status": "clear"}, {"name": "Ahmad Ibrahim Primary School", "vac": 137, "app": 14, "status": "clear"}, {"name": "Ai Tong School", "vac": 119, "app": 160, "status": "ballot"}, {"name": "Alexandra Primary School", "vac": 60, "app": 63, "status": "ballot"}, {"name": "Anchor Green Primary School", "vac": 94, "app": 14, "status": "clear"}, {"name": "Anderson Primary School", "vac": 67, "app": 30, "status": "clear"}, {"name": "Ang Mo Kio Primary School", "vac": 90, "app": 13, "status": "clear"}, {"name": "Anglo-Chinese School (Junior)", "vac": 143, "app": 124, "status": "clear"}, {"name": "Anglo-Chinese School (Primary)", "vac": 124, "app": 76, "status": "clear"}, {"name": "Angsana Primary School", "vac": 101, "app": 131, "status": "ballot"}, {"name": "Beacon Primary School", "vac": 43, "app": 0, "status": "clear"}, {"name": "Bedok Green Primary School", "vac": 110, "app": 10, "status": "clear"}, {"name": "Bendemeer Primary School", "vac": 96, "app": 24, "status": "clear"}, {"name": "Blangah Rise Primary School", "vac": 36, "app": 6, "status": "clear"}, {"name": "Boon Lay Garden Primary School", "vac": 44, "app": 12, "status": "clear"}, {"name": "Bukit Panjang Primary School", "vac": 54, "app": 54, "status": "clear"}, {"name": "Bukit Timah Primary School", "vac": 60, "app": 6, "status": "clear"}, {"name": "Bukit View Primary School", "vac": 173, "app": 22, "status": "clear"}, {"name": "CHIJ (Katong) Primary", "vac": 106, "app": 45, "status": "clear"}, {"name": "CHIJ (Kellock)", "vac": 56, "app": 6, "status": "clear"}, {"name": "CHIJ Our Lady Queen of Peace", "vac": 95, "app": 10, "status": "clear"}, {"name": "CHIJ Our Lady of Good Counsel", "vac": 58, "app": 16, "status": "clear"}, {"name": "CHIJ Our Lady of the Nativity", "vac": 123, "app": 22, "status": "clear"}, {"name": "CHIJ Primary (Toa Payoh)", "vac": 101, "app": 67, "status": "clear"}, {"name": "CHIJ St. Nicholas Girls' School (Primary Section)", "vac": 105, "app": 93, "status": "clear"}, {"name": "Canberra Primary School", "vac": 62, "app": 21, "status": "clear"}, {"name": "Cantonment Primary School", "vac": 37, "app": 4, "status": "clear"}, {"name": "Casuarina Primary School", "vac": 27, "app": 22, "status": "clear"}, {"name": "Catholic High School (Primary Section)", "vac": 122, "app": 129, "status": "ballot"}, {"name": "Cedar Primary School", "vac": 120, "app": 39, "status": "clear"}, {"name": "Changkat Primary School", "vac": 177, "app": 8, "status": "clear"}, {"name": "Chongfu School", "vac": 119, "app": 110, "status": "clear"}, {"name": "Chongzheng Primary School", "vac": 125, "app": 50, "status": "clear"}, {"name": "Chua Chu Kang Primary School", "vac": 84, "app": 39, "status": "clear"}, {"name": "Clementi Primary School", "vac": 118, "app": 13, "status": "clear"}, {"name": "Compassvale Primary School", "vac": 46, "app": 16, "status": "clear"}, {"name": "Concord Primary School", "vac": 73, "app": 22, "status": "clear"}, {"name": "Corporation Primary School", "vac": 44, "app": 9, "status": "clear"}, {"name": "Dazhong Primary School", "vac": 58, "app": 29, "status": "clear"}, {"name": "De La Salle School", "vac": 66, "app": 26, "status": "clear"}, {"name": "East Spring Primary School", "vac": 105, "app": 7, "status": "clear"}, {"name": "Edgefield Primary School", "vac": 89, "app": 8, "status": "clear"}, {"name": "Elias Park Primary School", "vac": 38, "app": 54, "status": "ballot"}, {"name": "Endeavour Primary School", "vac": 85, "app": 4, "status": "clear"}, {"name": "Evergreen Primary School", "vac": 54, "app": 12, "status": "clear"}, {"name": "Fairfield Methodist School (Primary)", "vac": 97, "app": 91, "status": "clear"}, {"name": "Farrer Park Primary School", "vac": 92, "app": 17, "status": "clear"}, {"name": "Fengshan Primary School", "vac": 62, "app": 34, "status": "clear"}, {"name": "Fern Green Primary School", "vac": 141, "app": 31, "status": "clear"}, {"name": "Fernvale Primary School", "vac": 97, "app": 31, "status": "clear"}, {"name": "First Toa Payoh Primary School", "vac": 70, "app": 5, "status": "clear"}, {"name": "Frontier Primary School", "vac": 41, "app": 58, "status": "ballot"}, {"name": "Fuchun Primary School", "vac": 62, "app": 27, "status": "clear"}, {"name": "Fuhua Primary School", "vac": 94, "app": 13, "status": "clear"}, {"name": "Gan Eng Seng Primary School", "vac": 38, "app": 13, "status": "clear"}, {"name": "Geylang Methodist School (Primary)", "vac": 131, "app": 35, "status": "clear"}, {"name": "Gongshang Primary School", "vac": 124, "app": 175, "status": "ballot"}, {"name": "Greendale Primary School", "vac": 81, "app": 16, "status": "clear"}, {"name": "Greenridge Primary School", "vac": 57, "app": 14, "status": "clear"}, {"name": "Greenwood Primary School", "vac": 77, "app": 17, "status": "clear"}, {"name": "Haig Girls' School", "vac": 90, "app": 15, "status": "clear"}, {"name": "Henry Park Primary School", "vac": 114, "app": 100, "status": "clear"}, {"name": "Holy Innocents' Primary School", "vac": 107, "app": 104, "status": "clear"}, {"name": "Hong Wen School", "vac": 68, "app": 39, "status": "clear"}, {"name": "Horizon Primary School", "vac": 66, "app": 86, "status": "ballot"}, {"name": "Hougang Primary School", "vac": 60, "app": 46, "status": "clear"}, {"name": "Huamin Primary School", "vac": 83, "app": 85, "status": "ballot"}, {"name": "Innova Primary School", "vac": 68, "app": 5, "status": "clear"}, {"name": "Jiemin Primary School", "vac": 105, "app": 14, "status": "clear"}, {"name": "Jing Shan Primary School", "vac": 40, "app": 47, "status": "restricted"}, {"name": "Junyuan Primary School", "vac": 114, "app": 92, "status": "clear"}, {"name": "Jurong Primary School", "vac": 57, "app": 21, "status": "clear"}, {"name": "Jurong West Primary School", "vac": 26, "app": 39, "status": "ballot"}, {"name": "Keming Primary School", "vac": 100, "app": 50, "status": "clear"}, {"name": "Kheng Cheng School", "vac": 83, "app": 18, "status": "clear"}, {"name": "Kong Hwa School", "vac": 111, "app": 91, "status": "clear"}, {"name": "Kuo Chuan Presbyterian Primary School", "vac": 83, "app": 75, "status": "clear"}, {"name": "Lakeside Primary School", "vac": 85, "app": 24, "status": "clear"}, {"name": "Lianhua Primary School", "vac": 158, "app": 14, "status": "clear"}, {"name": "Maha Bodhi School", "vac": 117, "app": 117, "status": "clear"}, {"name": "Maris Stella High School (Primary Section)", "vac": 168, "app": 127, "status": "clear"}, {"name": "Marsiling Primary School", "vac": 46, "app": 14, "status": "clear"}, {"name": "Marymount Convent School", "vac": 159, "app": 4, "status": "clear"}, {"name": "Mayflower Primary School", "vac": 55, "app": 15, "status": "clear"}, {"name": "Mee Toh School", "vac": 133, "app": 16, "status": "clear"}, {"name": "Meridian Primary School", "vac": 115, "app": 22, "status": "clear"}, {"name": "Methodist Girls' School (Primary)", "vac": 95, "app": 93, "status": "clear"}, {"name": "Montfort Junior School", "vac": 75, "app": 7, "status": "clear"}, {"name": "Nan Chiau Primary School", "vac": 110, "app": 40, "status": "clear"}, {"name": "Nan Hua Primary School", "vac": 58, "app": 104, "status": "restricted"}, {"name": "Nanyang Primary School", "vac": 125, "app": 176, "status": "ballot"}, {"name": "Naval Base Primary School", "vac": 71, "app": 50, "status": "clear"}, {"name": "New Town Primary School", "vac": 99, "app": 3, "status": "clear"}, {"name": "Ngee Ann Primary School", "vac": 83, "app": 40, "status": "clear"}, {"name": "North Spring Primary School", "vac": 47, "app": 9, "status": "clear"}, {"name": "North View Primary School", "vac": 58, "app": 72, "status": "ballot"}, {"name": "North Vista Primary School", "vac": 91, "app": 25, "status": "clear"}, {"name": "Northland Primary School", "vac": 74, "app": 79, "status": "ballot"}, {"name": "Northoaks Primary School", "vac": 131, "app": 3, "status": "clear"}, {"name": "Northshore Primary School", "vac": 96, "app": 63, "status": "clear"}, {"name": "Oasis Primary School", "vac": 67, "app": 21, "status": "clear"}, {"name": "Opera Estate Primary School", "vac": 64, "app": 6, "status": "clear"}, {"name": "Palm View Primary School", "vac": 47, "app": 8, "status": "clear"}, {"name": "Park View Primary School", "vac": 67, "app": 8, "status": "clear"}, {"name": "Pasir Ris Primary School", "vac": 17, "app": 38, "status": "ballot"}, {"name": "Paya Lebar Methodist Girls' School (Primary)", "vac": 130, "app": 54, "status": "clear"}, {"name": "Pei Chun Public School", "vac": 112, "app": 111, "status": "clear"}, {"name": "Pei Hwa Presbyterian Primary School", "vac": 59, "app": 83, "status": "ballot"}, {"name": "Pei Tong Primary School", "vac": 170, "app": 16, "status": "clear"}, {"name": "Peiying Primary School", "vac": 84, "app": 25, "status": "clear"}, {"name": "Pioneer Primary School", "vac": 279, "app": 24, "status": "clear"}, {"name": "Poi Ching School", "vac": 121, "app": 38, "status": "clear"}, {"name": "Princess Elizabeth Primary School", "vac": 47, "app": 137, "status": "ballot"}, {"name": "Punggol Cove Primary School", "vac": 133, "app": 19, "status": "clear"}, {"name": "Punggol Green Primary School", "vac": 51, "app": 60, "status": "ballot"}, {"name": "Punggol Primary School", "vac": 50, "app": 61, "status": "ballot"}, {"name": "Punggol View Primary School", "vac": 64, "app": 27, "status": "clear"}, {"name": "Qifa Primary School", "vac": 131, "app": 43, "status": "clear"}, {"name": "Qihua Primary School", "vac": 62, "app": 23, "status": "clear"}, {"name": "Queenstown Primary School", "vac": 101, "app": 13, "status": "clear"}, {"name": "Radin Mas Primary School", "vac": 68, "app": 67, "status": "clear"}, {"name": "Raffles Girls' Primary School", "vac": 153, "app": 55, "status": "clear"}, {"name": "Red Swastika School", "vac": 24, "app": 88, "status": "ballot"}, {"name": "River Valley Primary School", "vac": 64, "app": 29, "status": "clear"}, {"name": "Riverside Primary School", "vac": 65, "app": 59, "status": "clear"}, {"name": "Rivervale Primary School", "vac": 35, "app": 24, "status": "clear"}, {"name": "Rosyth School", "vac": 91, "app": 105, "status": "ballot"}, {"name": "Rulang Primary School", "vac": 77, "app": 81, "status": "ballot"}, {"name": "Sembawang Primary School", "vac": 52, "app": 52, "status": "clear"}, {"name": "Seng Kang Primary School", "vac": 61, "app": 7, "status": "clear"}, {"name": "Sengkang Green Primary School", "vac": 85, "app": 93, "status": "ballot"}, {"name": "Shuqun Primary School", "vac": 32, "app": 93, "status": "ballot"}, {"name": "Si Ling Primary School", "vac": 37, "app": 11, "status": "clear"}, {"name": "Singapore Chinese Girls' Primary School", "vac": 76, "app": 78, "status": "ballot"}, {"name": "South View Primary School", "vac": 97, "app": 157, "status": "ballot"}, {"name": "Springdale Primary School", "vac": 52, "app": 34, "status": "clear"}, {"name": "St Andrew's School (Junior)", "vac": 95, "app": 59, "status": "clear"}, {"name": "St. Anthony's Canossian Primary School", "vac": 93, "app": 9, "status": "clear"}, {"name": "St. Anthony's Primary School", "vac": 84, "app": 52, "status": "clear"}, {"name": "St. Gabriel's Primary School", "vac": 61, "app": 22, "status": "clear"}, {"name": "St. Hilda's Primary School", "vac": 99, "app": 121, "status": "ballot"}, {"name": "St. Joseph's Institution Junior", "vac": 122, "app": 61, "status": "clear"}, {"name": "St. Margaret's School (Primary)", "vac": 93, "app": 27, "status": "clear"}, {"name": "St. Stephen's School", "vac": 109, "app": 22, "status": "clear"}, {"name": "Tampines North Primary School", "vac": 128, "app": 17, "status": "clear"}, {"name": "Tampines Primary School", "vac": 165, "app": 77, "status": "clear"}, {"name": "Tanjong Katong Primary School", "vac": 73, "app": 78, "status": "ballot"}, {"name": "Tao Nan School", "vac": 108, "app": 129, "status": "ballot"}, {"name": "Teck Ghee Primary School", "vac": 84, "app": 15, "status": "clear"}, {"name": "Teck Whye Primary School", "vac": 75, "app": 13, "status": "clear"}, {"name": "Telok Kurau Primary School", "vac": 102, "app": 27, "status": "clear"}, {"name": "Temasek Primary School", "vac": 64, "app": 131, "status": "ballot"}, {"name": "Unity Primary School", "vac": 60, "app": 20, "status": "clear"}, {"name": "Valour Primary School", "vac": 43, "app": 54, "status": "restricted"}, {"name": "Waterway Primary School", "vac": 50, "app": 46, "status": "clear"}, {"name": "Wellington Primary School", "vac": 73, "app": 85, "status": "ballot"}, {"name": "West Grove Primary School", "vac": 51, "app": 11, "status": "clear"}, {"name": "West Spring Primary School", "vac": 69, "app": 67, "status": "clear"}, {"name": "West View Primary School", "vac": 29, "app": 29, "status": "clear"}, {"name": "Westwood Primary School", "vac": 63, "app": 55, "status": "clear"}, {"name": "White Sands Primary School", "vac": 23, "app": 14, "status": "clear"}, {"name": "Woodgrove Primary School", "vac": 51, "app": 17, "status": "clear"}, {"name": "Woodlands Primary School", "vac": 46, "app": 33, "status": "clear"}, {"name": "Woodlands Ring Primary School", "vac": 60, "app": 17, "status": "clear"}, {"name": "Xinghua Primary School", "vac": 89, "app": 5, "status": "clear"}, {"name": "Xingnan Primary School", "vac": 50, "app": 23, "status": "clear"}, {"name": "Xinmin Primary School", "vac": 66, "app": 55, "status": "clear"}, {"name": "Xishan Primary School", "vac": 69, "app": 23, "status": "clear"}, {"name": "Yangzheng Primary School", "vac": 48, "app": 85, "status": "ballot"}, {"name": "Yew Tee Primary School", "vac": 46, "app": 8, "status": "clear"}, {"name": "Yio Chu Kang Primary School", "vac": 69, "app": 4, "status": "clear"}, {"name": "Yishun Primary School", "vac": 65, "app": 33, "status": "clear"}, {"name": "Yu Neng Primary School", "vac": 52, "app": 47, "status": "clear"}, {"name": "Yuhua Primary School", "vac": 118, "app": 16, "status": "clear"}, {"name": "Yumin Primary School", "vac": 122, "app": 8, "status": "clear"}, {"name": "Zhangde Primary School", "vac": 46, "app": 13, "status": "clear"}, {"name": "Zhenghua Primary School", "vac": 47, "app": 58, "status": "restricted"}, {"name": "Zhonghua Primary School", "vac": 70, "app": 3, "status": "clear"}];
+
+// ---------- derived fields ----------
+SCHOOLS.forEach(s => { s.pct = s.vac > 0 ? Math.round((s.app / s.vac) * 100) : 0; });
+
+const totalVac = SCHOOLS.reduce((a,s)=>a+s.vac,0);
+const totalApp = SCHOOLS.reduce((a,s)=>a+s.app,0);
+const ballotCount = SCHOOLS.filter(s=>s.status==='ballot').length;
+const restrictedCount = SCHOOLS.filter(s=>s.status==='restricted').length;
+const clearCount = SCHOOLS.filter(s=>s.status==='clear').length;
+const fillRate = Math.round((totalApp/totalVac)*1000)/10;
+
+// ---------- split-flap board ----------
+function flapTiles(str, {unitIndexes=[]}={}){
+  return [...str].map((ch,i)=>{
+    if(ch===','){ return `<div class="flap sep">,</div>`; }
+    if(ch==='.'){ return `<div class="flap sep">.</div>`; }
+    const unit = unitIndexes.includes(i) ? ' unit' : '';
+    return `<div class="flap${unit}">${ch}</div>`;
+  }).join('');
+}
+
+function statCard(valueStr, label, foot, opts){
+  return `<div class="stat-card">
+    <div class="flap-row">${flapTiles(valueStr, opts)}</div>
+    <div class="stat-label">${label}</div>
+    <div class="stat-foot">${foot}</div>
+  </div>`;
+}
+
+document.getElementById('board').innerHTML = [
+  statCard(totalVac.toLocaleString(), 'Total Phase 2A vacancies', `Across <b>178</b> schools`, {}),
+  statCard(totalApp.toLocaleString(), 'Total applicants', `Provisional, pre-verification`, {}),
+  statCard(fillRate + '%', 'National fill rate', `<b>${totalApp.toLocaleString()}</b> of <b>${totalVac.toLocaleString()}</b> seats claimed`, {unitIndexes:[String(fillRate).length]}),
+  statCard(String(ballotCount).padStart(2,'0'), 'Schools balloting', `Plus <b>${restrictedCount}</b> oversubscribed but exempt`, {}),
+].join('');
+
+// stagger flap animation
+document.querySelectorAll('.flap').forEach((el,i)=>{
+  el.style.animationDelay = (i * 0.025) + 's';
+});
+
+// ---------- contested / spare charts ----------
+function bar(name, valLabel, pct, cls){
+  return `<div class="bar-row">
+    <div class="bar-name" title="${name}">${name}</div>
+    <div class="bar-track"><div class="bar-fill ${cls}" style="width:${Math.min(pct,100)}%"></div></div>
+    <div class="bar-val">${valLabel}</div>
+  </div>`;
+}
+
+const contested = SCHOOLS.filter(s=>s.status==='ballot')
+  .map(s=>({...s, ratio: s.app/s.vac}))
+  .sort((a,b)=>b.ratio-a.ratio)
+  .slice(0,8);
+const maxRatio = Math.max(...contested.map(s=>s.ratio));
+document.getElementById('chart-contested').innerHTML = contested
+  .map(s=>bar(s.name, s.ratio.toFixed(2)+'×', (s.ratio/maxRatio)*100, 'amber'))
+  .join('');
+
+const spare = SCHOOLS.filter(s=>s.status==='clear')
+  .map(s=>({...s, spare: s.vac - s.app}))
+  .sort((a,b)=>b.spare-a.spare)
+  .slice(0,8);
+const maxSpare = Math.max(...spare.map(s=>s.spare));
+document.getElementById('chart-spare').innerHTML = spare
+  .map(s=>bar(s.name, '+'+s.spare, (s.spare/maxSpare)*100, 'green'))
+  .join('');
+
+// ---------- table ----------
+const STATUS_LABEL = { ballot:'Balloting', clear:'No ballot', restricted:'Restricted' };
+let state = { filter:'all', query:'', sortKey:'app', sortDir:'desc' };
+
+function fillColor(pct){
+  if(pct >= 100) return 'var(--amber)';
+  if(pct >= 70) return '#d9c25a';
+  return 'var(--green)';
+}
+
+function render(){
+  let rows = SCHOOLS.filter(s=>{
+    if(state.filter !== 'all' && s.status !== state.filter) return false;
+    if(state.query && !s.name.toLowerCase().includes(state.query)) return false;
+    return true;
+  });
+
+  rows.sort((a,b)=>{
+    let av = a[state.sortKey], bv = b[state.sortKey];
+    if(typeof av === 'string'){ av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if(av < bv) return state.sortDir==='asc' ? -1 : 1;
+    if(av > bv) return state.sortDir==='asc' ? 1 : -1;
+    return 0;
+  });
+
+  const tbody = document.getElementById('tbody');
+  if(rows.length === 0){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">No schools match this search.</td></tr>`;
+  } else {
+    tbody.innerHTML = rows.map(s => `
+      <tr class="${s.status==='ballot' ? 'is-ballot' : ''}">
+        <td class="school-name">${s.name}</td>
+        <td class="num">${s.vac}</td>
+        <td class="num">${s.app}</td>
+        <td>
+          <div class="fill-cell">
+            <div class="fill-track"><div class="fill-bar" style="width:${Math.min(s.pct,100)}%; background:${fillColor(s.pct)}"></div></div>
+            <div class="fill-pct">${s.pct}%</div>
+          </div>
+        </td>
+        <td><span class="tag ${s.status}"><span class="dot"></span>${STATUS_LABEL[s.status]}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('table-note').textContent =
+    `Showing ${rows.length} of 178 schools` + (state.query ? ` matching "${state.query}"` : '') + '.';
+
+  document.querySelectorAll('thead th').forEach(th=>{
+    th.dataset.sorted = th.dataset.key === state.sortKey ? 'true' : 'false';
+    const arrow = th.querySelector('.arrow');
+    if(th.dataset.key === state.sortKey){
+      arrow.textContent = state.sortDir === 'asc' ? '↑' : '↓';
+    } else {
+      arrow.textContent = '↕';
+    }
+  });
+}
+
+document.getElementById('search').addEventListener('input', e=>{
+  state.query = e.target.value.trim().toLowerCase();
+  render();
+});
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.dataset.active='false');
+    chip.dataset.active = 'true';
+    state.filter = chip.dataset.filter;
+    render();
+  });
+});
+
+document.querySelectorAll('thead th').forEach(th=>{
+  th.querySelector('button').addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(state.sortKey === key){
+      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sortKey = key;
+      state.sortDir = key === 'name' ? 'asc' : 'desc';
+    }
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>
